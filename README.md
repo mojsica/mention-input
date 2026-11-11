@@ -59,7 +59,7 @@ pnpm ng build angular-mention-input
 
 ## Out of scope (v1)
 
-Rich-text toolbar, built-in HTTP user search, Vue (later), Yokoy app coupling.
+Rich-text toolbar, built-in HTTP user search, Vue (later).
 
 ## License
 
