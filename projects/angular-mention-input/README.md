@@ -2,18 +2,14 @@
 
 Contenteditable `@` mention input for Angular with chips, a user picker, and **ControlValueAccessor** support.
 
-Unlike textarea-only mention libs, the value is structured sections (`text` | `mention`) — useful for chat, invoice comments, and “notify users” fields.
+Unlike textarea-only mention libs, the value is structured sections (`text` | `mention`) — useful for chat, comments, and “notify users” fields.
 
-Shared models/helpers live in private `@mojsica/mention-core` and are synced into `src/lib/core` before build (`pnpm sync:core`).
-
-![Demo](../../docs/assets/angular-mention-demo.gif)
+![Demo](https://raw.githubusercontent.com/mojsica/mention-input/main/docs/assets/angular-mention-demo.gif)
 
 ## Install
 
 ```bash
 npm i @mojsica/angular-mention-input
-# or
-pnpm add @mojsica/angular-mention-input
 ```
 
 **Peers:** `@angular/core`, `@angular/common`, `@angular/forms` — `>=17 <21`.
@@ -33,6 +29,10 @@ users: MentionUser[] = [
 ];
 
 sections = new FormControl<MentionContentSection[]>([], { nonNullable: true });
+
+onQuery(q: string) {
+  // fetch users for `q`, then assign this.users
+}
 ```
 
 ```html
@@ -41,10 +41,10 @@ sections = new FormControl<MentionContentSection[]>([], { nonNullable: true });
   [users]="users"
   [loading]="loading"
   (mentionQueryChange)="onQuery($event)"
-  (mentionSelected)="onSelected($event)"
-  (mentionOpenChange)="onOpen($event)"
 />
 ```
+
+Type `@`, pick a user → a mention chip is inserted. The form value is `MentionContentSection[]`, not a plain string.
 
 ## Value model
 
@@ -59,10 +59,10 @@ type MentionContentSection =
 | API | Description |
 |-----|-------------|
 | `[users]` | Users shown in the picker right now |
-| `[loading]` | Shows a loading state in the picker |
-| `[clientFilter]` | Local filter by name/email (set `false` when the parent filters/fetches) |
+| `[loading]` | Loading state in the picker |
+| `[clientFilter]` | Local name/email filter (`false` when you filter server-side) |
 | `[placeholder]`, `[disabled]`, `[hasError]`, … | Field chrome |
-| `(mentionQueryChange)` | Fires as the user types after `@` (and on open) |
+| `(mentionQueryChange)` | Fires as the user types after `@` |
 | `(mentionSelected)` | User picked from the list |
 | `(mentionOpenChange)` | Picker opened / closed |
 | CVA | `MentionContentSection[]` via `formControl` / `ngModel` |
@@ -83,9 +83,7 @@ onQuery(q: string) {
 
 ## Theming
 
-One default Material-like look (plain CSS — **not** Angular Material).
-
-Map your design-system tokens onto `--mi-*` on a parent (or `:root`):
+Map design-system tokens onto `--mi-*` on a parent (or `:root`):
 
 ```css
 .my-panel {
@@ -102,16 +100,10 @@ Map your design-system tokens onto `--mi-*` on a parent (or `:root`):
 }
 ```
 
-Stable classes for escape-hatch styling: `.mi-editor`, `.mi-mention`, `.mi-mention-draft`, `.mi-user`, …
+## Links
 
-## Local demo
-
-From the monorepo root:
-
-```bash
-pnpm install
-pnpm ng serve demo-angular
-```
+- [GitHub](https://github.com/mojsica/mention-input)
+- [npm](https://www.npmjs.com/package/@mojsica/angular-mention-input)
 
 ## License
 

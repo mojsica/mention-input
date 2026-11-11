@@ -2,37 +2,18 @@
 
 Professional contenteditable **`@mention`** input — structured chips + sections, not a plain textarea autocomplete.
 
-| Package | Status |
-|---------|--------|
-| [`@mojsica/angular-mention-input`](./projects/angular-mention-input) | Ready |
-| [`@mojsica/react-mention-input`](./packages/react-mention-input) | Ready |
-| [`@mojsica/vue-mention-input`](./packages/vue-mention-input) | Ready |
-| [`@mojsica/mention-core`](./packages/mention-core) | Private workspace (bundled into UI packages) |
+![mention-input demo](https://raw.githubusercontent.com/mojsica/mention-input/main/docs/assets/angular-mention-demo.gif)
 
-![angular-mention-input demo](./docs/assets/angular-mention-demo.gif)
+| Package | npm |
+|---------|-----|
+| [`@mojsica/angular-mention-input`](./projects/angular-mention-input) | [npm](https://www.npmjs.com/package/@mojsica/angular-mention-input) |
+| [`@mojsica/react-mention-input`](./packages/react-mention-input) | [npm](https://www.npmjs.com/package/@mojsica/react-mention-input) |
+| [`@mojsica/vue-mention-input`](./packages/vue-mention-input) | [npm](https://www.npmjs.com/package/@mojsica/vue-mention-input) |
+| [`@mojsica/mention-core`](./packages/mention-core) | Private (bundled into the UI packages) |
 
-**Angular gap:** existing Angular mention libs are mostly textarea/input `@`-autocomplete. Here you get a contenteditable field with mention chips, `MentionContentSection[]` value, CVA, CSS-variable theming, and demos — with the same product shape on React and Vue via shared core.
+Type `@` → pick a user → get a mention chip. The value is `MentionContentSection[]` (`text` | `mention`), with CSS-variable theming. Same product shape on Angular (CVA), React, and Vue via shared core.
 
-## Try demos
-
-```bash
-pnpm install
-pnpm build:core
-
-# Angular
-pnpm start:angular
-# http://localhost:4200
-
-# React
-pnpm start:react
-# http://localhost:5173
-
-# Vue
-pnpm start:vue
-# http://localhost:5174
-```
-
-## Install (when published)
+## Install
 
 ```bash
 npm i @mojsica/angular-mention-input
@@ -73,15 +54,28 @@ import '@mojsica/vue-mention-input/styles.css';
 </template>
 ```
 
+Each package README has the full API, value model, async user search, and theming.
+
+## Try demos locally
+
+```bash
+pnpm install
+pnpm build:core
+
+pnpm start:angular   # http://localhost:4200
+pnpm start:react     # http://localhost:5173
+pnpm start:vue       # http://localhost:5174
+```
+
 ## Structure
 
 ```text
 packages/
   mention-core/              # private shared models + DOM helpers
-  react-mention-input/       # @mojsica/react-mention-input
-  vue-mention-input/         # @mojsica/vue-mention-input
+  react-mention-input/
+  vue-mention-input/
 projects/
-  angular-mention-input/     # @mojsica/angular-mention-input (+ CVA)
+  angular-mention-input/
   demo-angular/
 apps/
   demo-react/
@@ -91,15 +85,11 @@ apps/
 ## Build
 
 ```bash
-pnpm build          # core + angular + react + vue libs
+pnpm build
 pnpm build:demo-angular
 pnpm build:demo-react
 pnpm build:demo-vue
 ```
-
-## Out of scope (v1)
-
-Rich-text toolbar, built-in HTTP user search.
 
 ## License
 
