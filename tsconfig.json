@@ -3,6 +3,11 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "angular-mention-input": [
+        "./projects/angular-mention-input/src/public-api.ts"
+      ]
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -22,5 +27,19 @@
     "typeCheckHostBindings": true,
     "strictTemplates": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/angular-mention-input/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/angular-mention-input/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/demo-angular/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/demo-angular/tsconfig.spec.json"
+    }
+  ]
 }
