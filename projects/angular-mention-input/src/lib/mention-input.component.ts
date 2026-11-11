@@ -70,6 +70,7 @@ import { MentionContentSection, MentionUser } from './models';
       --mi-placeholder-color: #9ca3af;
       --mi-mention-bg: #e0e7ff;
       --mi-mention-color: #3730a3;
+      --mi-mention-draft-color: #4f46e5;
     }
 
     .mi-editor-wrap {
@@ -125,6 +126,13 @@ import { MentionContentSection, MentionUser } from './models';
       color: var(--mi-mention-color);
       border-radius: 4px;
       padding: 0 2px;
+      font-weight: 500;
+    }
+
+    /* Active @ search draft: @ + typed query highlighted */
+    .mi-editor ::ng-deep .mi-mention-draft {
+      pointer-events: auto;
+      color: var(--mi-mention-draft-color);
       font-weight: 500;
     }
 
@@ -277,6 +285,7 @@ export class MentionInputComponent
     // Insert draft synchronously (and we already preventDefault on '@')
     insertNodeAtCaretSync(spanElement);
     moveCaretToEnd(spanElement);
+    this.#updatePlaceholder();
 
     const componentRef = this.viewContainerRef.createComponent(MentionPickerComponent);
     this.activePickerRef = componentRef;
@@ -307,15 +316,31 @@ export class MentionInputComponent
       if (this.activePickerRef === componentRef) {
         componentRef.destroy();
       }
-      if (spanElement.isConnected) {
+      // Only unwrap while still a draft (not after a successful mention select)
+      if (spanElement.isConnected && spanElement.classList.contains('mi-mention-draft')) {
         this.#unwrapElementToText(spanElement);
       }
       this.mentionOpenChange.emit(false);
       this.#notifyChange();
     };
 
+    const isCaretInsideDraft = (): boolean => {
+      const selection = window.getSelection();
+      const node = selection?.anchorNode ?? null;
+      if (!node || !spanElement.isConnected) {
+        return false;
+      }
+      return spanElement === node || spanElement.contains(node);
+    };
+
     const removeSearchListener = this.renderer2.listen(this.elRef.nativeElement, 'input', () => {
       if (!draftReady || this.activePickerRef !== componentRef) {
+        return;
+      }
+
+      // Typed outside the draft (caret moved) — close like Yokoy select blur
+      if (!isCaretInsideDraft()) {
+        closeMentionDraft();
         return;
       }
 
@@ -343,6 +368,25 @@ export class MentionInputComponent
       this.#positionPicker(componentRef, spanElement);
     });
 
+    // Close when caret leaves the draft (click elsewhere / arrow out of @)
+    const removeSelectionListener = this.renderer2.listen('document', 'selectionchange', () => {
+      if (!draftReady || this.activePickerRef !== componentRef) {
+        return;
+      }
+      const selection = window.getSelection();
+      if (!selection?.rangeCount || !selection.anchorNode) {
+        return;
+      }
+      // Picker is on document.body; ignore selection quirks while interacting with it
+      const pickerEl = componentRef.location.nativeElement as HTMLElement;
+      if (pickerEl.contains(selection.anchorNode)) {
+        return;
+      }
+      if (!isCaretInsideDraft()) {
+        closeMentionDraft();
+      }
+    });
+
     componentRef.onDestroy(() => {
       draftReady = false;
       if (this.activePickerRef === componentRef) {
@@ -351,6 +395,7 @@ export class MentionInputComponent
       destroy$.next();
       destroy$.complete();
       removeSearchListener();
+      removeSelectionListener();
       removeResizeListener();
       window.removeEventListener('scroll', reposition, true);
       const pickerEl = componentRef.location.nativeElement as HTMLElement;
@@ -360,6 +405,7 @@ export class MentionInputComponent
     componentRef.instance.selectionChanged
       .pipe(
         tap((user) => {
+          draftReady = false; // prevent selectionchange from unwrapping the new chip
           this.renderer2.setProperty(spanElement, 'innerHTML', '');
           this.renderer2.removeClass(spanElement, 'mi-mention-draft');
           this.renderer2.addClass(spanElement, 'mi-mention');
@@ -384,10 +430,7 @@ export class MentionInputComponent
       .pipe(
         tap((open) => {
           if (!open) {
-            componentRef.destroy();
-            this.#unwrapElementToText(spanElement);
-            this.mentionOpenChange.emit(false);
-            this.#notifyChange();
+            closeMentionDraft();
           }
         }),
         takeUntil(destroy$),
@@ -419,8 +462,12 @@ export class MentionInputComponent
   }
 
   #updatePlaceholder(sections?: MentionContentSection[]): void {
-    const value = sections ?? parseContenteditable(this.#editable() ?? document.createElement('p'));
-    this.showPlaceholder = value.length === 0;
+    const editable = this.#editable();
+    const value = sections ?? parseContenteditable(editable ?? document.createElement('p'));
+    // Draft `@…` is not part of the CVA value, but the editor is not empty
+    const hasDraft = !!editable?.querySelector('span.mi-mention-draft');
+    const hasVisibleText = !!(editable?.textContent?.replace(/\u00A0/g, ' ').trim());
+    this.showPlaceholder = value.length === 0 && !hasDraft && !hasVisibleText;
     this.cdr.markForCheck();
   }
 

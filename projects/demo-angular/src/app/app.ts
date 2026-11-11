@@ -15,10 +15,30 @@ import {
 })
 export class App {
   readonly users: MentionUser[] = [
-    { id: '1', name: 'Ada Lovelace', email: 'ada@example.com' },
-    { id: '2', name: 'Alan Turing', email: 'alan@example.com' },
-    { id: '3', name: 'Grace Hopper', email: 'grace@example.com' },
-    { id: '4', name: 'Katherine Johnson', email: 'katherine@example.com' },
+    {
+      id: '1',
+      name: 'Ada Lovelace',
+      email: 'ada@example.com',
+      avatarUrl: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Ada',
+    },
+    {
+      id: '2',
+      name: 'Alan Turing',
+      email: 'alan@example.com',
+      avatarUrl: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Alan',
+    },
+    {
+      id: '3',
+      name: 'Grace Hopper',
+      email: 'grace@example.com',
+      // no avatarUrl → initials fallback
+    },
+    {
+      id: '4',
+      name: 'Katherine Johnson',
+      email: 'katherine@example.com',
+      avatarUrl: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Katherine',
+    },
   ];
 
   readonly sections = new FormControl<MentionContentSection[]>([], { nonNullable: true });
