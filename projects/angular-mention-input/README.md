@@ -4,6 +4,8 @@ Contenteditable `@` mention input for Angular with chips, a user picker, and **C
 
 Unlike textarea-only mention libs, the value is structured sections (`text` | `mention`) — useful for chat, invoice comments, and “notify users” fields.
 
+Shared models/helpers live in private `@mojsica/mention-core` and are synced into `src/lib/core` before build (`pnpm sync:core`).
+
 ![Demo](../../docs/assets/angular-mention-demo.gif)
 
 ## Install

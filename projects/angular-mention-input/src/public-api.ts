@@ -8,6 +8,7 @@ export {
   backSpaceFixedBehavior,
   buildContenteditableNodes,
   insertNodeAtCaret,
+  insertNodeAtCaretSync,
   insertNodesAtCaretPosition,
   moveCaretAfterNode,
   moveCaretToEnd,
