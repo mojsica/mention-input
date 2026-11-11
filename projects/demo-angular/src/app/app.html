@@ -1,11 +1,30 @@
 <main class="demo">
   <header class="demo__header">
     <h1>angular-mention-input</h1>
-    <p>Local demo — library provides a contenteditable field. Mentions come next.</p>
+    <p>Type <code>@</code> to mention a user. Value is structured sections via CVA.</p>
   </header>
 
   <section class="demo__panel">
     <h2>Playground</h2>
-    <lib-mention-input placeholder="Type here… (mentions coming soon)" />
+    <lib-mention-input
+      [formControl]="sections"
+      [users]="filteredUsers"
+      [loading]="loading"
+      [clientFilter]="false"
+      placeholder="Write a message… use @ to mention"
+      (mentionQueryChange)="onQuery($event)"
+      (mentionSelected)="onSelected($event)"
+    />
+  </section>
+
+  <section class="demo__panel">
+    <h2>Live value</h2>
+    <pre>{{ sections.value | json }}</pre>
+    <p class="demo__meta">
+      Query: <code>{{ lastQuery || '(none)' }}</code>
+      @if (lastSelected) {
+        · Selected: <code>{{ lastSelected.name }}</code>
+      }
+    </p>
   </section>
 </main>

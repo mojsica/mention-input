@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MentionInputComponent } from './angular-mention-input';
+import { MentionInputComponent } from './mention-input.component';
 
 describe('MentionInputComponent', () => {
   let component: MentionInputComponent;

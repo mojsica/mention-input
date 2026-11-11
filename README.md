@@ -1,26 +1,38 @@
 # mention-input
 
-Local monorepo for a contenteditable `@mention` input (Angular first; React later).
+Contenteditable `@mention` input for Angular (React later). Inspired by production invoice messaging UX; no Yokoy app coupling.
 
 ## Structure
 
-- `projects/angular-mention-input` — publishable Angular library (`lib-mention-input`)
-- `projects/demo-angular` — demo app that consumes the library
+- `projects/angular-mention-input` — publishable library
+- `projects/demo-angular` — local playground
 
 ## Develop
 
 ```bash
-cd mention-input
 pnpm install
 pnpm ng serve demo-angular
 ```
 
-Open http://localhost:4200 — the playground uses the local library via TypeScript path mapping.
+Open http://localhost:4200 — type `@` to mention mock users.
 
 ```bash
-pnpm ng build angular-mention-input   # build the library to dist/
+pnpm ng build angular-mention-input
 ```
 
-## Status
+## Library API (Angular)
 
-Starter: contenteditable field only. Mentions, CVA, picker, React package — next.
+```html
+<lib-mention-input
+  [formControl]="sections"
+  [users]="users"
+  [loading]="loading"
+  (mentionQueryChange)="onQuery($event)"
+  (mentionSelected)="onSelected($event)"
+  (mentionOpenChange)="onOpen($event)"
+/>
+```
+
+Value type: `MentionContentSection[]` (`text` | `mention`) via ControlValueAccessor.
+
+Theming: override CSS variables such as `--mi-mention-bg`, `--mi-mention-color`.
