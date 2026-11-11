@@ -10,7 +10,7 @@ Professional contenteditable **`@mention`** input — structured chips + section
 
 ![angular-mention-input demo](./docs/assets/angular-mention-demo.gif)
 
-**Why Angular first:** existing Angular mention libs are mostly textarea/input `@`-autocomplete. This package is a contenteditable field with mention chips, `MentionContentSection[]` value, CVA, CSS-variable theming, and a real demo. React ships for the same API shape.
+**Angular gap:** existing Angular mention libs are mostly textarea/input `@`-autocomplete. Here you get a contenteditable field with mention chips, `MentionContentSection[]` value, CVA, CSS-variable theming, and demos — with the same product shape on React via shared core.
 
 ## Try demos
 
