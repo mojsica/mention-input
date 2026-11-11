@@ -4,7 +4,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "angular-mention-input": [
+      "@mojsica/angular-mention-input": [
         "./projects/angular-mention-input/src/public-api.ts"
       ]
     },

@@ -1,5 +1,5 @@
 /*
- * Public API Surface of angular-mention-input
+ * Public API Surface of @mojsica/angular-mention-input
  */
 
 export { MentionInputComponent } from './lib/mention-input.component';

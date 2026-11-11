@@ -4,12 +4,13 @@ Professional contenteditable **`@mention`** input — structured chips + section
 
 | Package | Status |
 |---------|--------|
-| [`angular-mention-input`](./projects/angular-mention-input) | Ready to polish / publish |
-| `react-mention-input` | Planned |
-
-**Why Angular first:** existing Angular mention libs are mostly textarea/input `@`-autocomplete. This package is a contenteditable field with mention chips, `MentionContentSection[]` value, CVA, CSS-variable theming, and a real demo.
+| [`@mojsica/angular-mention-input`](./projects/angular-mention-input) | Ready to polish / publish |
+| `@mojsica/react-mention-input` | Planned |
+| `mention-core` (private workspace) | Extract with React |
 
 ![angular-mention-input demo](./docs/assets/angular-mention-demo.gif)
+
+**Why Angular first:** existing Angular mention libs are mostly textarea/input `@`-autocomplete. This package is a contenteditable field with mention chips, `MentionContentSection[]` value, CVA, CSS-variable theming, and a real demo.
 
 ## Try the Angular demo
 
@@ -28,7 +29,7 @@ Open http://localhost:4200
 ## Install (when published)
 
 ```bash
-npm i angular-mention-input
+npm i @mojsica/angular-mention-input
 ```
 
 ```html
@@ -46,7 +47,7 @@ Full API + theming: [`projects/angular-mention-input/README.md`](./projects/angu
 
 ```text
 projects/
-  angular-mention-input/   # publishable Angular library (+ CVA)
+  angular-mention-input/   # @mojsica/angular-mention-input (+ CVA)
   demo-angular/            # playground
 ```
 

@@ -1,4 +1,4 @@
-# angular-mention-input
+# @mojsica/angular-mention-input
 
 Contenteditable `@` mention input for Angular with chips, a user picker, and **ControlValueAccessor** support.
 
@@ -9,9 +9,9 @@ Unlike textarea-only mention libs, the value is structured sections (`text` | `m
 ## Install
 
 ```bash
-npm i angular-mention-input
+npm i @mojsica/angular-mention-input
 # or
-pnpm add angular-mention-input
+pnpm add @mojsica/angular-mention-input
 ```
 
 **Peers:** `@angular/core`, `@angular/common`, `@angular/forms` — `>=17 <21`.
@@ -24,7 +24,7 @@ import {
   MentionInputComponent,
   MentionContentSection,
   MentionUser,
-} from 'angular-mention-input';
+} from '@mojsica/angular-mention-input';
 
 users: MentionUser[] = [
   { id: '1', name: 'Ada Lovelace', email: 'ada@example.com', avatarUrl: '…' },

@@ -5,7 +5,7 @@ import {
   MentionContentSection,
   MentionInputComponent,
   MentionUser,
-} from 'angular-mention-input';
+} from '@mojsica/angular-mention-input';
 
 @Component({
   selector: 'app-root',
