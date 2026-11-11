@@ -1,0 +1,55 @@
+{
+  "name": "@mojsica/vue-mention-input",
+  "version": "0.1.0",
+  "description": "Contenteditable @mention input for Vue with chips and structured sections.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mojsica/mention-input.git",
+    "directory": "packages/vue-mention-input"
+  },
+  "keywords": [
+    "vue",
+    "mention",
+    "contenteditable",
+    "chips"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "vite build && cp src/index.d.ts dist/index.d.ts && cp src/models.ts dist/models.d.ts",
+    "dev": "vite build --watch"
+  },
+  "peerDependencies": {
+    "vue": "^3.4.0"
+  },
+  "dependencies": {
+    "@mojsica/mention-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "~5.9.2",
+    "vite": "^6.0.0",
+    "vue": "^3.5.13",
+    "vue-tsc": "^2.1.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
