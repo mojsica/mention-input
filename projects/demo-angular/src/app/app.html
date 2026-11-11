@@ -1,30 +1,52 @@
 <main class="demo">
   <header class="demo__header">
     <h1>angular-mention-input</h1>
-    <p>Type <code>@</code> to mention a user. Value is structured sections via CVA.</p>
+    <p>
+      Contenteditable <code>@</code> mentions with chips, structured
+      <code>MentionContentSection[]</code> value, and ControlValueAccessor.
+    </p>
   </header>
 
   <section class="demo__panel">
-    <h2>Playground</h2>
-    <lib-mention-input
-      [formControl]="sections"
-      [users]="filteredUsers"
-      [loading]="loading"
-      [clientFilter]="false"
-      placeholder="Write a message… use @ to mention"
-      (mentionQueryChange)="onQuery($event)"
-      (mentionSelected)="onSelected($event)"
-    />
+    <div class="demo__panel-head">
+      <h2>Playground</h2>
+      <label class="demo__toggle">
+        <input type="checkbox" [checked]="brandedTokens" (change)="toggleTokens()" />
+        Remap CSS variables
+      </label>
+    </div>
+
+    <div class="demo__editor" [class.demo__editor--branded]="brandedTokens">
+      <lib-mention-input
+        [formControl]="sections"
+        [users]="filteredUsers"
+        [loading]="loading"
+        [clientFilter]="false"
+        placeholder="Write a message… use @ to mention"
+        (mentionQueryChange)="onQuery($event)"
+        (mentionSelected)="onSelected($event)"
+      />
+    </div>
+    <p class="demo__hint">
+      One default Material-like look. The checkbox only remaps
+      <code>--mi-*</code> tokens (how consumers match a design system).
+    </p>
   </section>
 
   <section class="demo__panel">
     <h2>Live value</h2>
-    <pre>{{ sections.value | json }}</pre>
+    <pre class="demo__json">{{ sections.value | json }}</pre>
     <p class="demo__meta">
       Query: <code>{{ lastQuery || '(none)' }}</code>
       @if (lastSelected) {
         · Selected: <code>{{ lastSelected.name }}</code>
       }
     </p>
+  </section>
+
+  <section class="demo__panel">
+    <h2>Install</h2>
+    <pre class="demo__code">npm i angular-mention-input</pre>
+    <pre class="demo__code">{{ usageSnippet }}</pre>
   </section>
 </main>

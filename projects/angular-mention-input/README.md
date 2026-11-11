@@ -1,63 +1,116 @@
-# AngularMentionInput
+# angular-mention-input
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.0.
+Contenteditable `@` mention input for Angular with chips, a user picker, and **ControlValueAccessor** support.
 
-## Code scaffolding
+Unlike textarea-only mention libs, the value is structured sections (`text` | `mention`) — useful for chat, invoice comments, and “notify users” fields.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+![Demo](../../docs/assets/angular-mention-demo.gif)
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Install
 
 ```bash
-ng generate --help
+npm i angular-mention-input
+# or
+pnpm add angular-mention-input
 ```
 
-## Building
+**Peers:** `@angular/core`, `@angular/common`, `@angular/forms` — `>=17 <21`.
 
-To build the library, run:
+## Quick start
+
+```ts
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  MentionInputComponent,
+  MentionContentSection,
+  MentionUser,
+} from 'angular-mention-input';
+
+users: MentionUser[] = [
+  { id: '1', name: 'Ada Lovelace', email: 'ada@example.com', avatarUrl: '…' },
+];
+
+sections = new FormControl<MentionContentSection[]>([], { nonNullable: true });
+```
+
+```html
+<lib-mention-input
+  [formControl]="sections"
+  [users]="users"
+  [loading]="loading"
+  (mentionQueryChange)="onQuery($event)"
+  (mentionSelected)="onSelected($event)"
+  (mentionOpenChange)="onOpen($event)"
+/>
+```
+
+## Value model
+
+```ts
+type MentionContentSection =
+  | { type: 'text'; message: string }
+  | { type: 'mention'; userId: string; userName: string; email?: string };
+```
+
+## Inputs / outputs
+
+| API | Description |
+|-----|-------------|
+| `[users]` | Users shown in the picker right now |
+| `[loading]` | Shows a loading state in the picker |
+| `[clientFilter]` | Local filter by name/email (set `false` when the parent filters/fetches) |
+| `[placeholder]`, `[disabled]`, `[hasError]`, … | Field chrome |
+| `(mentionQueryChange)` | Fires as the user types after `@` (and on open) |
+| `(mentionSelected)` | User picked from the list |
+| `(mentionOpenChange)` | Picker opened / closed |
+| CVA | `MentionContentSection[]` via `formControl` / `ngModel` |
+
+### Async users
+
+The library does not call your API. Update `[users]` from `(mentionQueryChange)`:
+
+```ts
+onQuery(q: string) {
+  this.loading = true;
+  this.userApi.search(q).subscribe((users) => {
+    this.users = users;
+    this.loading = false;
+  });
+}
+```
+
+## Theming
+
+One default Material-like look (plain CSS — **not** Angular Material).
+
+Map your design-system tokens onto `--mi-*` on a parent (or `:root`):
+
+```css
+.my-panel {
+  --mi-editor-bg: var(--ds-surface);
+  --mi-editor-border: var(--ds-border);
+  --mi-editor-radius: var(--ds-radius-md);
+  --mi-mention-bg: var(--ds-color-primary-soft);
+  --mi-mention-color: var(--ds-color-primary);
+  --mi-mention-draft-color: var(--ds-color-primary);
+  --mi-picker-bg: var(--ds-surface-elevated);
+  --mi-picker-shadow: var(--ds-shadow-md);
+  --mi-user-active-bg: var(--ds-surface-hover);
+  --mi-avatar-size: 28px;
+}
+```
+
+Stable classes for escape-hatch styling: `.mi-editor`, `.mi-mention`, `.mi-mention-draft`, `.mi-user`, …
+
+## Local demo
+
+From the monorepo root:
 
 ```bash
-ng build angular-mention-input
+pnpm install
+pnpm ng serve demo-angular
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+## License
 
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-   ```bash
-   cd dist/angular-mention-input
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+MIT

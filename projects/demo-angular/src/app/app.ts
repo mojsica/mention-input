@@ -43,10 +43,22 @@ export class App {
 
   readonly sections = new FormControl<MentionContentSection[]>([], { nonNullable: true });
 
+  readonly usageSnippet = `<lib-mention-input
+  formControlName="sections"
+  [users]="users"
+  [loading]="loading"
+  (mentionQueryChange)="onQuery($event)"
+/>`;
+
   filteredUsers = this.users;
   loading = false;
+  brandedTokens = false;
   lastSelected: MentionUser | null = null;
   lastQuery = '';
+
+  toggleTokens(): void {
+    this.brandedTokens = !this.brandedTokens;
+  }
 
   onQuery(query: string): void {
     this.lastQuery = query;

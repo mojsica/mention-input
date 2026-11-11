@@ -62,15 +62,8 @@ import { MentionContentSection, MentionUser } from './models';
   `,
   styles: `
     :host {
+      /* Defaults live in var() fallbacks so parent --mi-* tokens inherit */
       display: block;
-      --mi-editor-bg: #fff;
-      --mi-editor-border: #d1d5db;
-      --mi-editor-radius: 8px;
-      --mi-editor-min-height: 88px;
-      --mi-placeholder-color: #9ca3af;
-      --mi-mention-bg: #e0e7ff;
-      --mi-mention-color: #3730a3;
-      --mi-mention-draft-color: #4f46e5;
     }
 
     .mi-editor-wrap {
@@ -86,21 +79,21 @@ import { MentionContentSection, MentionUser } from './models';
       position: absolute;
       top: 12px;
       left: 14px;
-      color: var(--mi-placeholder-color);
+      color: var(--mi-placeholder-color, #9ca3af);
       pointer-events: none;
       user-select: none;
       z-index: 1;
     }
 
     .mi-editor {
-      min-height: var(--mi-editor-min-height);
+      min-height: var(--mi-editor-min-height, 88px);
       max-height: 180px;
       overflow: auto;
       margin: 0;
       padding: 12px 14px;
-      border: 1px solid var(--mi-editor-border);
-      border-radius: var(--mi-editor-radius);
-      background: var(--mi-editor-bg);
+      border: 1px solid var(--mi-editor-border, #d1d5db);
+      border-radius: var(--mi-editor-radius, 8px);
+      background: var(--mi-editor-bg, #fff);
       outline: none;
       line-height: 1.5;
       white-space: pre-wrap;
@@ -122,8 +115,8 @@ import { MentionContentSection, MentionUser } from './models';
 
     .mi-editor ::ng-deep .mi-mention {
       pointer-events: none;
-      background: var(--mi-mention-bg);
-      color: var(--mi-mention-color);
+      background: var(--mi-mention-bg, #e0e7ff);
+      color: var(--mi-mention-color, #3730a3);
       border-radius: 4px;
       padding: 0 2px;
       font-weight: 500;
@@ -132,7 +125,7 @@ import { MentionContentSection, MentionUser } from './models';
     /* Active @ search draft: @ + typed query highlighted */
     .mi-editor ::ng-deep .mi-mention-draft {
       pointer-events: auto;
-      color: var(--mi-mention-draft-color);
+      color: var(--mi-mention-draft-color, #4f46e5);
       font-weight: 500;
     }
 
@@ -447,6 +440,28 @@ export class MentionInputComponent
     const left = Math.min(Math.max(8, rect.left), window.innerWidth - 260);
     const top = Math.min(rect.bottom + 4, window.innerHeight - 16);
     componentRef.instance.setPosition(left, Math.max(8, top));
+    // Picker is mounted on document.body — copy inherited --mi-* from this host
+    this.#syncPickerTheme(componentRef.location.nativeElement as HTMLElement);
+  }
+
+  #syncPickerTheme(pickerEl: HTMLElement): void {
+    const style = getComputedStyle(this.elRef.nativeElement);
+    const vars = [
+      '--mi-editor-border',
+      '--mi-editor-radius',
+      '--mi-picker-bg',
+      '--mi-picker-shadow',
+      '--mi-user-active-bg',
+      '--mi-avatar-size',
+    ];
+    for (const name of vars) {
+      const value = style.getPropertyValue(name).trim();
+      if (value) {
+        pickerEl.style.setProperty(name, value);
+      } else {
+        pickerEl.style.removeProperty(name);
+      }
+    }
   }
 
   #notifyChange(): void {
