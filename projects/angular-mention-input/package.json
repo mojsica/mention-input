@@ -1,6 +1,6 @@
 {
   "name": "@mojsica/angular-mention-input",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Contenteditable @mention input for Angular with chips, sections, and ControlValueAccessor.",
   "license": "MIT",
   "repository": {
