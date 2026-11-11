@@ -4,6 +4,8 @@ Professional contenteditable **`@mention`** input — structured chips + section
 
 ![mention-input demo](https://raw.githubusercontent.com/mojsica/mention-input/main/docs/assets/angular-mention-demo.gif)
 
+**Try Angular live:** [StackBlitz](https://stackblitz.com/edit/mojsica-angular-mention-input)
+
 | Package | npm |
 |---------|-----|
 | [`@mojsica/angular-mention-input`](./projects/angular-mention-input) | [npm](https://www.npmjs.com/package/@mojsica/angular-mention-input) |

@@ -6,6 +6,8 @@ Unlike textarea-only mention libs, the value is structured sections (`text` | `m
 
 ![Demo](https://raw.githubusercontent.com/mojsica/mention-input/main/docs/assets/angular-mention-demo.gif)
 
+**Try it live:** [StackBlitz](https://stackblitz.com/edit/mojsica-angular-mention-input)
+
 ## Install
 
 ```bash
@@ -102,6 +104,7 @@ Map design-system tokens onto `--mi-*` on a parent (or `:root`):
 
 ## Links
 
+- [StackBlitz demo](https://stackblitz.com/edit/mojsica-angular-mention-input)
 - [GitHub](https://github.com/mojsica/mention-input)
 - [npm](https://www.npmjs.com/package/@mojsica/angular-mention-input)
 
