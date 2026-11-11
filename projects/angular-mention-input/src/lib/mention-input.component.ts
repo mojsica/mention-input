@@ -23,7 +23,7 @@ import { Subject, takeUntil, tap } from 'rxjs';
 import {
   backSpaceFixedBehavior,
   buildContenteditableNodes,
-  insertNodeAtCaret,
+  insertNodeAtCaretSync,
   insertNodesAtCaretPosition,
   moveCaretAfterNode,
   moveCaretToEnd,
@@ -202,10 +202,24 @@ export class MentionInputComponent
   @HostListener('keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
     if (event.key === '@') {
-      this.#openMention(event);
+      event.preventDefault();
+      this.#openMention();
+      return;
     }
 
     if (event.key === 'Backspace') {
+      const draft = this.elRef.nativeElement.querySelector(
+        'span.mi-mention-draft[contenteditable="true"]'
+      ) as HTMLElement | null;
+      // Only when the draft is exactly "@" — deleting the trigger closes the picker
+      if (draft && draft.innerText === '@') {
+        event.preventDefault();
+        this.activePickerRef?.destroy();
+        this.#unwrapElementToText(draft);
+        this.mentionOpenChange.emit(false);
+        this.#notifyChange();
+        return;
+      }
       backSpaceFixedBehavior(event);
     }
   }
@@ -251,7 +265,7 @@ export class MentionInputComponent
     this.disabled = isDisabled;
   }
 
-  #openMention(_event: KeyboardEvent): void {
+  #openMention(): void {
     const spanElement: HTMLElement = this.renderer2.createElement('span');
     this.renderer2.addClass(spanElement, 'mi-mention-draft');
     this.renderer2.setAttribute(spanElement, 'contenteditable', 'true');
@@ -259,6 +273,10 @@ export class MentionInputComponent
     this.renderer2.setStyle(spanElement, 'display', 'inline-block');
     const prefix = this.renderer2.createText('@');
     this.renderer2.appendChild(spanElement, prefix);
+
+    // Insert draft synchronously (and we already preventDefault on '@')
+    insertNodeAtCaretSync(spanElement);
+    moveCaretToEnd(spanElement);
 
     const componentRef = this.viewContainerRef.createComponent(MentionPickerComponent);
     this.activePickerRef = componentRef;
@@ -269,38 +287,74 @@ export class MentionInputComponent
     componentRef.setInput('search', '');
 
     const destroy$ = new Subject<void>();
+    let draftReady = true;
+
+    // Render picker on document.body with position:fixed so overflow on .mi-editor cannot clip it
+    this.renderer2.appendChild(document.body, componentRef.location.nativeElement);
+    this.#positionPicker(componentRef, spanElement);
+    this.mentionOpenChange.emit(true);
+    this.mentionQueryChange.emit('');
+
+    const reposition = () => this.#positionPicker(componentRef, spanElement);
+    const removeResizeListener = this.renderer2.listen('window', 'resize', reposition);
+    window.addEventListener('scroll', reposition, true);
+
+    const closeMentionDraft = () => {
+      if (!draftReady) {
+        return;
+      }
+      draftReady = false;
+      if (this.activePickerRef === componentRef) {
+        componentRef.destroy();
+      }
+      if (spanElement.isConnected) {
+        this.#unwrapElementToText(spanElement);
+      }
+      this.mentionOpenChange.emit(false);
+      this.#notifyChange();
+    };
+
+    const removeSearchListener = this.renderer2.listen(this.elRef.nativeElement, 'input', () => {
+      if (!draftReady || this.activePickerRef !== componentRef) {
+        return;
+      }
+
+      const editableElement = this.elRef.nativeElement.querySelector(
+        'span.mi-mention-draft[contenteditable="true"]'
+      );
+
+      // @ deleted or browser removed the draft span — hide picker
+      if (!(editableElement instanceof HTMLElement)) {
+        closeMentionDraft();
+        return;
+      }
+
+      const text = editableElement.innerText ?? '';
+      if (!text.startsWith('@')) {
+        closeMentionDraft();
+        return;
+      }
+
+      const query = text.slice(1);
+      componentRef.setInput('search', query);
+      componentRef.setInput('users', this.users);
+      componentRef.setInput('loading', this.loading);
+      this.mentionQueryChange.emit(query);
+      this.#positionPicker(componentRef, spanElement);
+    });
+
     componentRef.onDestroy(() => {
+      draftReady = false;
       if (this.activePickerRef === componentRef) {
         this.activePickerRef = null;
       }
       destroy$.next();
       destroy$.complete();
       removeSearchListener();
-    });
-
-    this.renderer2.appendChild(spanElement, componentRef.location.nativeElement);
-    insertNodeAtCaret(spanElement);
-    moveCaretToEnd(spanElement);
-    this.mentionOpenChange.emit(true);
-    this.mentionQueryChange.emit('');
-
-    const removeSearchListener = this.renderer2.listen(this.elRef.nativeElement, 'input', () => {
-      const editableElement = this.elRef.nativeElement.querySelector(
-        'span.mi-mention-draft[contenteditable="true"]'
-      );
-      if (editableElement instanceof HTMLElement) {
-        if (editableElement.innerText[0] !== '@') {
-          componentRef.destroy();
-          this.#unwrapElementToText(spanElement);
-          this.mentionOpenChange.emit(false);
-        } else {
-          const query = editableElement.innerText.slice(1);
-          componentRef.setInput('search', query);
-          componentRef.setInput('users', this.users);
-          componentRef.setInput('loading', this.loading);
-          this.mentionQueryChange.emit(query);
-        }
-      }
+      removeResizeListener();
+      window.removeEventListener('scroll', reposition, true);
+      const pickerEl = componentRef.location.nativeElement as HTMLElement;
+      pickerEl.parentElement?.removeChild(pickerEl);
     });
 
     componentRef.instance.selectionChanged
@@ -340,6 +394,16 @@ export class MentionInputComponent
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
+  }
+
+  #positionPicker(
+    componentRef: ComponentRef<MentionPickerComponent>,
+    anchor: HTMLElement
+  ): void {
+    const rect = anchor.getBoundingClientRect();
+    const left = Math.min(Math.max(8, rect.left), window.innerWidth - 260);
+    const top = Math.min(rect.bottom + 4, window.innerHeight - 16);
+    componentRef.instance.setPosition(left, Math.max(8, top));
   }
 
   #notifyChange(): void {

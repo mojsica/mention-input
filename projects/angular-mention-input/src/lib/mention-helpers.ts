@@ -176,31 +176,34 @@ export function backSpaceFixedBehavior(event: KeyboardEvent): void {
 
 export function moveCaretToEnd(editableElement: HTMLElement | null): void {
   const selection = window.getSelection();
-  if (!editableElement || !selection?.rangeCount) {
+  if (!editableElement || !selection) {
     return;
   }
 
-  requestAnimationFrame(() => {
-    try {
-      const newRange = document.createRange();
-      newRange.selectNodeContents(editableElement);
-      newRange.collapse(false);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
+  try {
+    const newRange = document.createRange();
+    newRange.selectNodeContents(editableElement);
+    newRange.collapse(false); // after last character (after '@' in a draft)
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  } catch {
+    // ignore caret placement failures
+  }
+}
 
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        if (range.startOffset > 0) {
-          range.setStart(range.startContainer, range.startOffset - 1);
-          range.collapse(true);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      }
-    } catch {
-      // ignore caret placement failures
-    }
-  });
+/** Insert a node at the current caret without deleting the previous character. */
+export function insertNodeAtCaretSync(node: Node): void {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount) {
+    return;
+  }
+  const range = selection.getRangeAt(0);
+  range.collapse(true);
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
 export function moveCaretAfterNode(node: HTMLElement | null): void {

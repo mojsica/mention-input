@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   HostListener,
   Input,
@@ -48,12 +49,11 @@ import { MentionUser } from './models';
   styles: `
     :host {
       display: block;
-      position: absolute;
-      z-index: 20;
-      left: 0;
-      top: calc(100% + 4px);
+      position: fixed;
+      z-index: 10000;
       min-width: 240px;
       max-width: 320px;
+      /* left/top set from MentionInput via setPosition() so overflow parents don't clip */
     }
 
     .mi-picker {
@@ -146,6 +146,8 @@ export class MentionPickerComponent {
   private searchQuery = '';
   activeIndex = 0;
 
+  constructor(private readonly hostRef: ElementRef<HTMLElement>) {}
+
   @Input() set search(value: string) {
     this.searchQuery = value ?? '';
     this.activeIndex = 0;
@@ -188,6 +190,12 @@ export class MentionPickerComponent {
       event.preventDefault();
       this.close();
     }
+  }
+
+  setPosition(left: number, top: number): void {
+    const el = this.hostRef.nativeElement;
+    el.style.left = `${Math.max(8, left)}px`;
+    el.style.top = `${top}px`;
   }
 
   select(user: MentionUser): void {
